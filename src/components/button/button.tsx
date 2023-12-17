@@ -1,6 +1,6 @@
-import { ReactNode } from "react"
+import { ButtonHTMLAttributes, ReactNode } from "react"
 
-interface ButtonProps {
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>  {
   /**
    * Is this the principal call to action on the page?
    */
@@ -20,7 +20,8 @@ interface ButtonProps {
 export const Button = ({
   children,
   primary=false,
-  rounded=false
+  rounded=false,
+  ...props
 }: ButtonProps) => {
 
   const commonStyle = 'px-8 py-4 font-semibold hover:drop-shadow-[0_0px_10px_rgba(255,_255,_255,_0.1)] transition-all';
@@ -30,6 +31,7 @@ export const Button = ({
   return (
     <button
       className={`${buttonStyle} ${commonStyle} ${roundStyle}`}
+      {...props}
     >
       {
         children
