@@ -19,6 +19,7 @@ const config: Config = {
         secondary:  '#999999',
         'midnight-black': '#111217',
         'carcoal-gray': '#363a43',
+        'steel-gray': '#888989',
         blue: '#2059EA',
         orange: '#E67E22',
         pink: '#E91E63',
