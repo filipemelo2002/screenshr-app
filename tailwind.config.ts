@@ -23,7 +23,8 @@ const config: Config = {
         blue: '#2059EA',
         orange: '#E67E22',
         pink: '#E91E63',
-        'slate-blue': '#546E7A'
+        'slate-blue': '#546E7A',
+        green: '#20E300'
       }
     },
     fontFamily: {
