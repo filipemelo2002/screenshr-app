@@ -1,5 +1,5 @@
-import Image from 'next/image';
-import githubIcon from '../../../public/github.svg';
+import Image from "next/image";
+import githubIcon from "../../../public/github.svg";
 
 export const Header = () => {
   return (
@@ -8,12 +8,8 @@ export const Header = () => {
         <h1 className="font-sans text-white font-bold font-size text-2xl">
           ScreenShr
         </h1>
-        <Image 
-          src={githubIcon}
-          alt="Github"
-          className='text-white'
-        />
+        <Image src={githubIcon} alt="Github" className="text-white" />
       </div>
     </div>
-  )
-}
+  );
+};

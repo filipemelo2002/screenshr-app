@@ -47,7 +47,7 @@ interface PartyControlsProps {
 }
 
 export const PartyControls = ({
-  name, 
+  name,
   color,
   isStreaming = false,
   partyCode,
@@ -77,7 +77,7 @@ export const PartyControls = ({
             className="flex w-full align-items-center justify-between"
             key={user.id}
           >
-            <User name={user.name} color={user.color}/>
+            <User name={user.name} color={user.color} />
             <button onClick={() => onRemoveUser("user-id")}>
               <Image src={removeIcon} alt="Remove" width={15} />
             </button>
