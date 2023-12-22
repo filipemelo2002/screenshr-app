@@ -1,6 +1,6 @@
-import { ButtonHTMLAttributes, ReactNode } from "react"
+import { ButtonHTMLAttributes, ReactNode } from "react";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>  {
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /**
    * Is this the principal call to action on the page?
    */
@@ -19,23 +19,23 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>  {
 
 export const Button = ({
   children,
-  primary=false,
-  rounded=false,
+  primary = false,
+  rounded = false,
   ...props
 }: ButtonProps) => {
+  const commonStyle =
+    "px-8 py-4 font-semibold hover:drop-shadow-[0_0px_10px_rgba(255,_255,_255,_0.1)] transition-all";
+  const roundStyle = rounded ? "rounded-[33px]" : "rounded-md";
 
-  const commonStyle = 'px-8 py-4 font-semibold hover:drop-shadow-[0_0px_10px_rgba(255,_255,_255,_0.1)] transition-all';
-  const roundStyle = rounded? 'rounded-[33px]' : 'rounded-md';
-
-  const buttonStyle = primary ? 'bg-primary color-primary': 'bg-black text-white'
+  const buttonStyle = primary
+    ? "bg-primary color-primary"
+    : "bg-black text-white";
   return (
     <button
       className={`${buttonStyle} ${commonStyle} ${roundStyle}`}
       {...props}
     >
-      {
-        children
-      }
+      {children}
     </button>
-  )
-}
+  );
+};

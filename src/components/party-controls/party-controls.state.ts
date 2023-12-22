@@ -6,19 +6,17 @@ export interface UsePartyConstrolsProps {
 }
 export const usePartyConstrols = ({
   isStreaming,
-  onChangeStreaming
+  onChangeStreaming,
 }: UsePartyConstrolsProps) => {
-
   const [streaming, setStreaming] = useState(isStreaming);
-
 
   const toggleStreaming = () => {
     setStreaming(!streaming);
     onChangeStreaming(!streaming);
-  }
+  };
 
   return {
     streaming,
-    toggleStreaming
-  }
-}
+    toggleStreaming,
+  };
+};

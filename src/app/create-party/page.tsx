@@ -1,7 +1,3 @@
 export default function CreateParty() {
-  return (
-    <h1>
-      ScreenShr, Create Party
-    </h1>
-  )
+  return <h1>ScreenShr, Create Party</h1>;
 }
