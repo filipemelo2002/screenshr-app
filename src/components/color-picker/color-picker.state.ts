@@ -8,11 +8,33 @@ export const useColorPickerState = ({
   initialColor = "bg-blue",
 }: UseColorPickerStateProps) => {
   const menuElementRef = useRef<HTMLDivElement>(null);
+  const menuOptionsRef = useRef<HTMLDivElement>(null);
+
   const [color, setColor] = useState(initialColor);
   const [showDialog, setShowDialog] = useState(false);
 
   const toggleDialog = () => {
-    setShowDialog((state) => !state);
+    const state = !showDialog;
+    setShowDialog(state);
+    handleMenuAnimation(state);
+  };
+
+  const handleMenuAnimation = (show: boolean) => {
+    if (!menuOptionsRef.current) {
+      return;
+    }
+
+    if (show) {
+      menuOptionsRef.current.classList.remove("fade-out");
+      menuOptionsRef.current.classList.remove("hidden");
+      menuOptionsRef.current.classList.add("fade-in");
+      return;
+    }
+    menuOptionsRef.current.classList.remove("fade-in");
+    menuOptionsRef.current.classList.add("fade-out");
+    setTimeout(() => {
+      menuOptionsRef.current?.classList.add("hidden");
+    }, 100);
   };
 
   useEffect(() => {
@@ -28,6 +50,7 @@ export const useColorPickerState = ({
         !menuElementRef.current.contains(clickedElement)
       ) {
         setShowDialog(false);
+        handleMenuAnimation(false);
       }
     };
 
@@ -43,5 +66,6 @@ export const useColorPickerState = ({
     setColor,
     toggleDialog,
     menuElementRef,
+    menuOptionsRef,
   };
 };

@@ -1,12 +1,11 @@
 import { useColorPickerState } from "./color-picker.state";
+import "./color-picker.styles.css";
 
 export const ColorPicker = () => {
-  const { color, showDialog, setColor, toggleDialog, menuElementRef } =
+  const { color, setColor, toggleDialog, menuElementRef, menuOptionsRef } =
     useColorPickerState({
       initialColor: "bg-blue",
     });
-
-  const dialogDisplay = showDialog ? "block" : "hidden";
 
   return (
     <div className="relative w-fit" ref={menuElementRef}>
@@ -37,7 +36,8 @@ export const ColorPicker = () => {
       </div>
 
       <div
-        className={`absolute z-10 mt-2 w-56 rounded-md border border-black bg-carcoal-gray shadow-lg ${dialogDisplay}`}
+        className={`absolute z-10 mt-2 w-[214px] rounded-md border border-black bg-carcoal-gray shadow-lg hidden fade-out`}
+        ref={menuOptionsRef}
         role="menu"
       >
         <div className="flex p-2 gap-3 flex-wrap">
