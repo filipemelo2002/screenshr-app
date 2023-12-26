@@ -1,14 +1,10 @@
-"use client";
 import { Button } from "@/components/button/button";
 import { Header } from "@/components/header/header";
 import Image from "next/image";
 import illustration from "/public/casting-illustration.svg";
 import ChevronRight from "@/components/icons/chevron-right";
-import { usePageState } from "./page.state";
 
 export default function Home() {
-  const { onClickStartParty } = usePageState();
-
   return (
     <main className="bg-darker-gray flex flex-col min-h-screen">
       <Header />
@@ -25,7 +21,7 @@ export default function Home() {
               primary
               rounded
               className="flex items-center"
-              onClick={onClickStartParty}
+              href="/create-party"
             >
               Start Party
               <ChevronRight className="ml-3" />

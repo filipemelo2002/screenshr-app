@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ButtonHTMLAttributes, ReactNode } from "react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -15,6 +16,11 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
    * Roundy button?
    */
   rounded?: boolean;
+
+  /**
+   * Is it a link instead?
+   */
+  href?: string;
 }
 
 export const Button = ({
@@ -22,6 +28,8 @@ export const Button = ({
   primary = false,
   rounded = false,
   className,
+  onClick,
+  href,
   ...props
 }: ButtonProps) => {
   const commonStyle =
@@ -31,6 +39,18 @@ export const Button = ({
   const buttonStyle = primary
     ? "bg-primary color-primary"
     : "bg-black text-white";
+
+  if (!onClick && href) {
+    return (
+      <Link
+        href={href}
+        className={`${buttonStyle} ${commonStyle} ${roundStyle} ${className}`}
+      >
+        {children}
+      </Link>
+    );
+  }
+
   return (
     <button
       className={`${buttonStyle} ${commonStyle} ${roundStyle} ${className}`}
