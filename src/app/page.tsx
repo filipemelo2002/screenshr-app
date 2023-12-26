@@ -1,10 +1,14 @@
+"use client";
 import { Button } from "@/components/button/button";
 import { Header } from "@/components/header/header";
 import Image from "next/image";
 import illustration from "/public/casting-illustration.svg";
 import ChevronRight from "@/components/icons/chevron-right";
+import { usePageState } from "./page.state";
 
 export default function Home() {
+  const { onClickStartParty } = usePageState();
+
   return (
     <main className="bg-darker-gray flex flex-col min-h-screen">
       <Header />
@@ -17,7 +21,12 @@ export default function Home() {
             An open-source, free, and easy to use, tool for sharing your screen.
           </p>
           <div className="flex gap-4 mt-12">
-            <Button primary rounded className="flex items-center">
+            <Button
+              primary
+              rounded
+              className="flex items-center"
+              onClick={onClickStartParty}
+            >
               Start Party
               <ChevronRight className="ml-3" />
             </Button>
