@@ -1,11 +1,21 @@
+import { Color } from "../user/user";
 import { useColorPickerState } from "./color-picker.state";
 import "./color-picker.styles.css";
 
-export const ColorPicker = () => {
-  const { color, setColor, toggleDialog, menuElementRef, menuOptionsRef } =
-    useColorPickerState({
-      initialColor: "bg-blue",
-    });
+export interface ColorPickerProps {
+  /**
+   * Initial Color Picker's color
+   */
+  value: Color;
+
+  /**
+   * onChange event to return the selected color
+   */
+  onChange: (value: Color) => void;
+}
+export const ColorPicker = ({ value, onChange }: ColorPickerProps) => {
+  const { toggleDialog, menuElementRef, menuOptionsRef } =
+    useColorPickerState();
 
   return (
     <div className="relative w-fit" ref={menuElementRef}>
@@ -14,7 +24,7 @@ export const ColorPicker = () => {
           Profile Color
         </label>
         <button
-          className={`w-15 h-12 ${color} mt-3 rounded-md text-white relative`}
+          className={`w-15 h-12 ${value} mt-3 rounded-md text-white relative`}
           onClick={toggleDialog}
         >
           <svg
@@ -43,31 +53,31 @@ export const ColorPicker = () => {
         <div className="flex p-2 gap-3 flex-wrap">
           <button
             className="bg-blue w-10 h-10 rounded-md"
-            onClick={() => setColor("bg-blue")}
+            onClick={() => onChange("bg-blue")}
           ></button>
           <button
             className="bg-orange w-10 h-10 rounded-md"
-            onClick={() => setColor("bg-orange")}
+            onClick={() => onChange("bg-orange")}
           ></button>
           <button
             className="bg-pink w-10 h-10 rounded-md"
-            onClick={() => setColor("bg-pink")}
+            onClick={() => onChange("bg-pink")}
           ></button>
           <button
             className="bg-slate-blue w-10 h-10 rounded-md"
-            onClick={() => setColor("bg-slate-blue")}
+            onClick={() => onChange("bg-slate-blue")}
           ></button>
           <button
             className="bg-purple w-10 h-10 rounded-md"
-            onClick={() => setColor("bg-purple")}
+            onClick={() => onChange("bg-purple")}
           ></button>
           <button
             className="bg-light-blue w-10 h-10 rounded-md"
-            onClick={() => setColor("bg-light-blue")}
+            onClick={() => onChange("bg-light-blue")}
           ></button>
           <button
             className="bg-yellow w-10 h-10 rounded-md"
-            onClick={() => setColor("bg-yellow")}
+            onClick={() => onChange("bg-yellow")}
           ></button>
         </div>
       </div>

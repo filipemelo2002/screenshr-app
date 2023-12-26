@@ -1,16 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import type { Color } from "../user/user";
 
-interface UseColorPickerStateProps {
-  initialColor?: Color;
-}
-export const useColorPickerState = ({
-  initialColor = "bg-blue",
-}: UseColorPickerStateProps) => {
+export const useColorPickerState = () => {
   const menuElementRef = useRef<HTMLDivElement>(null);
   const menuOptionsRef = useRef<HTMLDivElement>(null);
 
-  const [color, setColor] = useState(initialColor);
   const [showDialog, setShowDialog] = useState(false);
 
   const toggleDialog = () => {
@@ -62,8 +56,6 @@ export const useColorPickerState = ({
   }, []);
   return {
     showDialog,
-    color,
-    setColor,
     toggleDialog,
     menuElementRef,
     menuOptionsRef,
