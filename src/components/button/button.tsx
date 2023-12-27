@@ -33,7 +33,7 @@ export const Button = ({
   ...props
 }: ButtonProps) => {
   const commonStyle =
-    "px-6 py-3 md:px-8 md:py-4 font-semibold hover:drop-shadow-[0_0px_10px_rgba(255,_255,_255,_0.1)] transition-all text-xs md:text-base";
+    "px-6 py-3 font-semibold hover:drop-shadow-[0_0px_10px_rgba(255,_255,_255,_0.1)] transition-all text-xs md:text-base";
   const roundStyle = rounded ? "rounded-[33px]" : "rounded-md";
 
   const buttonStyle = primary
