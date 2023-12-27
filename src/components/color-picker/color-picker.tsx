@@ -73,37 +73,58 @@ export const ColorPicker = ({
           <button
             className="bg-blue w-10 h-10 rounded-md"
             type="button"
-            onClick={() => onChange("bg-blue")}
+            onClick={() => {
+              onChange("bg-blue");
+              toggleDialog();
+            }}
           ></button>
           <button
             className="bg-orange w-10 h-10 rounded-md"
             type="button"
-            onClick={() => onChange("bg-orange")}
+            onClick={() => {
+              onChange("bg-orange");
+              toggleDialog();
+            }}
           ></button>
           <button
             className="bg-pink w-10 h-10 rounded-md"
             type="button"
-            onClick={() => onChange("bg-pink")}
+            onClick={() => {
+              onChange("bg-pink");
+              toggleDialog();
+            }}
           ></button>
           <button
             className="bg-slate-blue w-10 h-10 rounded-md"
             type="button"
-            onClick={() => onChange("bg-slate-blue")}
+            onClick={() => {
+              onChange("bg-slate-blue");
+              toggleDialog();
+            }}
           ></button>
           <button
             className="bg-purple w-10 h-10 rounded-md"
             type="button"
-            onClick={() => onChange("bg-purple")}
+            onClick={() => {
+              onChange("bg-purple");
+              toggleDialog();
+            }}
           ></button>
           <button
             className="bg-light-blue w-10 h-10 rounded-md"
             type="button"
-            onClick={() => onChange("bg-light-blue")}
+            onClick={() => {
+              onChange("bg-light-blue");
+              toggleDialog();
+            }}
           ></button>
           <button
             className="bg-yellow w-10 h-10 rounded-md"
             type="button"
-            onClick={() => onChange("bg-yellow")}
+            onClick={() => {
+              onChange("bg-yellow");
+              toggleDialog();
+            }}
           ></button>
         </div>
       </div>
