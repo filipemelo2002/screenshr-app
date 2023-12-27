@@ -17,7 +17,12 @@ export default function Home() {
             An open-source, free, and easy to use, tool for sharing your screen.
           </p>
           <div className="flex gap-4 mt-12">
-            <Button primary rounded className="flex items-center">
+            <Button
+              primary
+              rounded
+              className="flex items-center"
+              href="/create-party"
+            >
               Start Party
               <ChevronRight className="ml-3" />
             </Button>
