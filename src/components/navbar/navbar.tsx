@@ -17,7 +17,7 @@ export const Navbar = ({ label = "Home", onClick = () => {} }: NavbarProps) => {
     <div className="flex bg-black w-full px-4 py-4 h-min text-secondary font-sans">
       <button
         type="button"
-        className="flex w-full max-w-6xl mx-auto items-center leading-normal"
+        className="flex w-full max-w-6xl mx-auto items-center leading-normal hover:text-white"
         onClick={onClick}
       >
         <svg
