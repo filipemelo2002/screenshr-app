@@ -1,8 +1,14 @@
+"use client";
+import { ComponentPropsWithoutRef, HTMLProps } from "react";
 import { Color } from "../user/user";
 import { useColorPickerState } from "./color-picker.state";
 import "./color-picker.styles.css";
 
 export interface ColorPickerProps {
+  /**
+   * Color Picker's Label
+   */
+  label?: string;
   /**
    * Initial Color Picker's color
    */
@@ -12,20 +18,33 @@ export interface ColorPickerProps {
    * onChange event to return the selected color
    */
   onChange: (value: Color) => void;
+
+  /**
+   * Additional classes
+   */
+  className?: string;
 }
-export const ColorPicker = ({ value, onChange }: ColorPickerProps) => {
+export const ColorPicker = ({
+  label,
+  value,
+  className,
+  onChange,
+}: ColorPickerProps) => {
   const { toggleDialog, menuElementRef, menuOptionsRef } =
     useColorPickerState();
 
   return (
-    <div className="relative w-fit" ref={menuElementRef}>
-      <div className="flex flex-col overflow-hidden w-fit">
-        <label className="font-bold font-sans text-sm text-steel-gray">
-          Profile Color
-        </label>
+    <div className={`relative w-fit ${className}`} ref={menuElementRef}>
+      <div className="flex flex-col overflow-hidden w-fit gap-3">
+        {!!label && (
+          <label className="font-bold font-sans text-sm text-steel-gray">
+            {label}
+          </label>
+        )}
         <button
-          className={`w-15 h-12 ${value} mt-3 rounded-md text-white relative`}
+          className={`w-15 h-12 ${value} rounded-md text-white relative`}
           onClick={toggleDialog}
+          type="button"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -53,30 +72,37 @@ export const ColorPicker = ({ value, onChange }: ColorPickerProps) => {
         <div className="flex p-2 gap-3 flex-wrap">
           <button
             className="bg-blue w-10 h-10 rounded-md"
+            type="button"
             onClick={() => onChange("bg-blue")}
           ></button>
           <button
             className="bg-orange w-10 h-10 rounded-md"
+            type="button"
             onClick={() => onChange("bg-orange")}
           ></button>
           <button
             className="bg-pink w-10 h-10 rounded-md"
+            type="button"
             onClick={() => onChange("bg-pink")}
           ></button>
           <button
             className="bg-slate-blue w-10 h-10 rounded-md"
+            type="button"
             onClick={() => onChange("bg-slate-blue")}
           ></button>
           <button
             className="bg-purple w-10 h-10 rounded-md"
+            type="button"
             onClick={() => onChange("bg-purple")}
           ></button>
           <button
             className="bg-light-blue w-10 h-10 rounded-md"
+            type="button"
             onClick={() => onChange("bg-light-blue")}
           ></button>
           <button
             className="bg-yellow w-10 h-10 rounded-md"
+            type="button"
             onClick={() => onChange("bg-yellow")}
           ></button>
         </div>
