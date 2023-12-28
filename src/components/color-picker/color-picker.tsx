@@ -27,7 +27,7 @@ export interface ColorPickerProps {
 export const ColorPicker = ({
   label,
   value,
-  className,
+  className = "",
   onChange,
 }: ColorPickerProps) => {
   const { toggleDialog, menuElementRef, menuOptionsRef } =
@@ -35,14 +35,14 @@ export const ColorPicker = ({
 
   return (
     <div className={`relative w-fit ${className}`} ref={menuElementRef}>
-      <div className="flex flex-col overflow-hidden w-fit gap-3">
+      <div className="flex flex-col w-fit gap-3">
         {!!label && (
           <label className="font-bold font-sans text-sm text-steel-gray">
             {label}
           </label>
         )}
         <button
-          className={`w-15 h-12 ${value} rounded-md text-white relative`}
+          className={`w-16 h-12 ${value} rounded-md text-white relative`}
           onClick={toggleDialog}
           type="button"
         >
