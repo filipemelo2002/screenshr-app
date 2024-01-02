@@ -10,10 +10,10 @@ export default function CreateParty() {
   const { color, setColor, navigateBack } = useCreateparty();
   return (
     <Layout navigateBack={navigateBack}>
-      <form>
+      <form className="mt-[41px]">
         <Input label="Nickname" />
         <ColorPicker
-          label="Profile Color"
+          label="Profile color"
           value={color}
           onChange={setColor}
           className="mt-4"

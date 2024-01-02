@@ -26,7 +26,7 @@ export default function Home() {
               Start Party
               <ChevronRight className="ml-3" />
             </Button>
-            <Button rounded className="flex items-center">
+            <Button rounded className="flex items-center" href="/join-party">
               Join Party
               <ChevronRight className="ml-3" />
             </Button>
