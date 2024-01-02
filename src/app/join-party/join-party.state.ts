@@ -22,12 +22,25 @@ export const useJoinParty = () => {
       partyCodeInputRefs.current[index - 1]?.focus();
       return;
     }
-
-    if (index === partyCodeInputRefs.current.length - 1) {
+    const isValidCharacter = /^[a-zA-Z0-9]$/.test(key);
+    if (index === partyCodeInputRefs.current.length - 1 || !isValidCharacter) {
       return;
     }
 
     partyCodeInputRefs.current[index + 1]?.focus();
+  };
+
+  const assignValue = (index: number, key: string) => {
+    const input = partyCodeInputRefs.current[index];
+    if (!input) {
+      throw new Error("Could not find input at index " + index);
+    }
+
+    const regex = /^[a-zA-Z0-9]$/;
+    if (!regex.test(key)) {
+      return;
+    }
+    input.value = key;
   };
 
   useEffect(() => {
@@ -35,6 +48,7 @@ export const useJoinParty = () => {
       const inputIndex = partyCodeInputRefs.current.findIndex(
         (el) => el === event.target,
       );
+      assignValue(inputIndex, event.key);
       focusElement(inputIndex, event.key);
     };
 
