@@ -1,0 +1,8 @@
+.party-controls .party-controls__container {
+  max-height: 0;
+  overflow: hidden;
+  transition: all ease-in 400ms;
+}
+.party-controls:hover .party-controls__container {
+  max-height: 500px;
+}

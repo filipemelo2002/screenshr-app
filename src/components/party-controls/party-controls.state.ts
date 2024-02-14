@@ -9,14 +9,21 @@ export const usePartyConstrols = ({
   onChangeStreaming,
 }: UsePartyConstrolsProps) => {
   const [streaming, setStreaming] = useState(isStreaming);
+  const [open, setOpen] = useState(true);
 
   const toggleStreaming = () => {
     setStreaming(!streaming);
     onChangeStreaming(!streaming);
   };
 
+  const toggleOpen = () => {
+    setOpen((val) => !val);
+  };
+
   return {
     streaming,
     toggleStreaming,
+    open,
+    toggleOpen,
   };
 };

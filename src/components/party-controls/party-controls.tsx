@@ -5,6 +5,7 @@ import stopCastIcon from "../../../public/stop-cast.svg";
 import removeIcon from "../../../public/remove.svg";
 import copyIcon from "../../../public/copy.svg";
 import { usePartyConstrols } from "./party-controls.state";
+import "./party-controls.styles.css";
 
 interface User {
   id: string;
@@ -44,6 +45,11 @@ interface PartyControlsProps {
    * User's array object
    */
   users: User[];
+
+  /**
+   * Additional classes
+   */
+  className?: string;
 }
 
 export const PartyControls = ({
@@ -53,15 +59,21 @@ export const PartyControls = ({
   partyCode,
   onChangeStreaming,
   onRemoveUser,
+  className = "",
   users,
 }: PartyControlsProps) => {
-  const { streaming, toggleStreaming } = usePartyConstrols({
+  const { streaming, toggleStreaming, toggleOpen } = usePartyConstrols({
     isStreaming,
     onChangeStreaming,
   });
   return (
-    <div className="flexflex-column  bg-midnight-black max-w-[274px]">
-      <header className="flex px-3 py-2 justify-between align-items-center w-full">
+    <div
+      className={`flexflex-column  bg-midnight-black max-w-[274px] party-controls ${className}`}
+    >
+      <header
+        className="flex px-3 py-2 justify-between align-items-center w-full"
+        onClick={toggleOpen}
+      >
         <User name={name} color={color} />
         <button onClick={toggleStreaming}>
           <Image
@@ -71,26 +83,28 @@ export const PartyControls = ({
           />
         </button>
       </header>
-      <ul className="flex flex-col gap-4 bg-dark-gray px-3 py-2 w-full">
-        {users.map((user) => (
-          <li
-            className="flex w-full align-items-center justify-between"
-            key={user.id}
-          >
-            <User name={user.name} color={user.color} />
-            <button onClick={() => onRemoveUser("user-id")}>
-              <Image src={removeIcon} alt="Remove" width={15} />
-            </button>
-          </li>
-        ))}
-      </ul>
-      <footer className="flex py-4 px-3 text-white align-items-center">
-        <p>
-          Party code:{" "}
-          <label className="font-bold">{partyCode.toUpperCase()}</label>
-        </p>
-        <Image src={copyIcon} alt="copy" width={17} className="ml-3 mt-1" />
-      </footer>
+      <div className="flex flex-col party-controls__container">
+        <ul className="flex flex-col gap-4 bg-dark-gray px-3 py-2 w-full">
+          {users.map((user) => (
+            <li
+              className="flex w-full align-items-center justify-between"
+              key={user.id}
+            >
+              <User name={user.name} color={user.color} />
+              <button onClick={() => onRemoveUser("user-id")}>
+                <Image src={removeIcon} alt="Remove" width={15} />
+              </button>
+            </li>
+          ))}
+        </ul>
+        <footer className="flex py-4 px-3 text-white align-items-center">
+          <p>
+            Party code:{" "}
+            <label className="font-bold">{partyCode.toUpperCase()}</label>
+          </p>
+          <Image src={copyIcon} alt="copy" width={17} className="ml-3 mt-1" />
+        </footer>
+      </div>
     </div>
   );
 };
