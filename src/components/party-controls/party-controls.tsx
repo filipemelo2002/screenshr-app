@@ -68,7 +68,7 @@ export const PartyControls = ({
   });
   return (
     <div
-      className={`flexflex-column  bg-midnight-black max-w-[274px] party-controls ${className}`}
+      className={`flexflex-column  bg-midnight-black min-w-[274px] party-controls ${className}`}
     >
       <header
         className="flex px-3 py-2 justify-between align-items-center w-full"

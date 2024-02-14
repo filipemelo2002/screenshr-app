@@ -5,6 +5,7 @@ interface LayoutProps {
   navigateBack: () => void;
   buttonLabel?: string;
   children: ReactNode;
+  showTitle?: boolean;
 }
 export const Layout = ({
   buttonLabel,

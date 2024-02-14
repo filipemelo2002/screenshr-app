@@ -12,9 +12,15 @@ interface NavbarProps {
    */
   className?: string;
 }
-export const Navbar = ({ label = "Home", onClick = () => {} }: NavbarProps) => {
+export const Navbar = ({
+  label = "Home",
+  onClick = () => {},
+  className = "",
+}: NavbarProps) => {
   return (
-    <div className="flex bg-black w-full px-4 py-4 h-min text-secondary font-sans">
+    <div
+      className={`flex bg-black w-full px-4 py-4 h-min text-secondary font-sans ${className}`}
+    >
       <div className="flex w-full max-w-6xl mx-auto ">
         <button
           type="button"
