@@ -7,7 +7,7 @@ import { useCreateparty } from "./create-party.state";
 import { Layout } from "@/components/layout/layout";
 
 export default function CreateParty() {
-  const { color, setColor, navigateBack } = useCreateparty();
+  const { color, setColor, navigateBack, onCreateParty } = useCreateparty();
   return (
     <Layout navigateBack={navigateBack}>
       <form className="mt-[41px]">
@@ -18,7 +18,12 @@ export default function CreateParty() {
           onChange={setColor}
           className="mt-4"
         />
-        <Button className="w-full mt-3" primary>
+        <Button
+          type="button"
+          className="w-full mt-3"
+          onClick={onCreateParty}
+          primary
+        >
           <label className="font- font-semibold text-sm leading-normal">
             Create party
           </label>

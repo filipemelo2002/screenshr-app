@@ -54,6 +54,7 @@ export const Button = ({
   return (
     <button
       className={`${buttonStyle} ${commonStyle} ${roundStyle} ${className}`}
+      onClick={onClick}
       {...props}
     >
       {children}
