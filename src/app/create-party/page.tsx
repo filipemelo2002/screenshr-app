@@ -7,11 +7,12 @@ import { useCreateparty } from "./create-party.state";
 import { Layout } from "@/components/layout/layout";
 
 export default function CreateParty() {
-  const { color, setColor, navigateBack, onCreateParty } = useCreateparty();
+  const { color, setColor, navigateBack, onCreateParty, nicknameInput } =
+    useCreateparty();
   return (
     <Layout navigateBack={navigateBack}>
       <form className="mt-[41px]">
-        <Input label="Nickname" />
+        <Input label="Nickname" ref={nicknameInput} />
         <ColorPicker
           label="Profile color"
           value={color}

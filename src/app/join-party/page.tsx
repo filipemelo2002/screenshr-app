@@ -6,7 +6,14 @@ import { Layout } from "@/components/layout/layout";
 import { useJoinParty } from "./join-party.state";
 
 export default function JoinParty() {
-  const { navigateBack, color, setColor, partyCodeInputRefs } = useJoinParty();
+  const {
+    navigateBack,
+    color,
+    setColor,
+    partyCodeInputRefs,
+    nicknameInput,
+    onJoinParty,
+  } = useJoinParty();
 
   return (
     <Layout navigateBack={navigateBack}>
@@ -63,7 +70,7 @@ export default function JoinParty() {
             />
           </div>
           <div className="mt-4">
-            <Input label="Nickname" />
+            <Input label="Nickname" ref={nicknameInput} />
           </div>
           <ColorPicker
             value={color}
@@ -71,7 +78,7 @@ export default function JoinParty() {
             label="Profile color"
             className="mt-4"
           />
-          <Button className="mt-4" primary>
+          <Button className="mt-4" type="button" onClick={onJoinParty} primary>
             Join party
           </Button>
         </div>

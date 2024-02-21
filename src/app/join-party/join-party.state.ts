@@ -1,6 +1,7 @@
 import { Color } from "@/components/user/user";
+import { WebsocketService } from "@/services/websocket.service";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const KEYS = {
   BACKSPACE: "Backspace",
@@ -9,6 +10,8 @@ export const useJoinParty = () => {
   const [color, setColor] = useState<Color>("bg-blue");
   const partyCodeInputRefs = useRef<HTMLInputElement[]>([]);
   const router = useRouter();
+  const nicknameInput = useRef<HTMLInputElement>(null);
+  const socketService = useMemo(() => new WebsocketService(), []);
 
   const navigateBack = () => {
     router.push("/");
@@ -43,6 +46,44 @@ export const useJoinParty = () => {
     input.value = key;
   };
 
+  const getPartyCode = () => {
+    return [...partyCodeInputRefs.current].reduce(
+      (code, input) => code + input.value,
+      "",
+    );
+  };
+
+  const validateInputs = () => {
+    if (!nicknameInput.current || !partyCodeInputRefs.current || !color) {
+      throw new Error("Inputs were not properly initialized");
+    }
+
+    const nickname = nicknameInput.current.value;
+    const partyCode = getPartyCode();
+    if (!nickname || !partyCode) {
+      throw new Error("Inputs must not be empty");
+    }
+
+    if (partyCode.length < 5) {
+      throw new Error("Invalid Party code");
+    }
+
+    return true;
+  };
+  const onJoinParty = () => {
+    if (!validateInputs()) {
+      return;
+    }
+    const nickname = nicknameInput.current?.value as string;
+    const partyCode = getPartyCode();
+
+    socketService.joinRoom({
+      nickname: nickname,
+      roomId: partyCode,
+      color,
+    });
+  };
+
   useEffect(() => {
     const eventHandler = (event: KeyboardEvent) => {
       const inputIndex = partyCodeInputRefs.current.findIndex(
@@ -68,5 +109,7 @@ export const useJoinParty = () => {
     color,
     setColor,
     partyCodeInputRefs,
+    nicknameInput,
+    onJoinParty,
   };
 };
