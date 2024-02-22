@@ -5,7 +5,7 @@ export const WEBSOCKET_EVENTS = {
   CREATE_ROOM: "room/create",
 };
 
-interface Room {
+export interface Room {
   id: string;
   owner: string;
   users: string[];

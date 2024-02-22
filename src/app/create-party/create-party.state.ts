@@ -1,10 +1,13 @@
 import { Color } from "@/components/user/user";
 import { WebsocketService } from "@/services/websocket.service";
+import { useRoomStore } from "@/zustand/room.store";
+import { useUserStore } from "@/zustand/user.store";
 import { useRouter } from "next/navigation";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 export const useCreateparty = () => {
-  const [color, setColor] = useState<Color>("bg-blue");
+  const color = useUserStore(useShallow((state) => state.color));
   const nicknameInput = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const socketService = useMemo(() => new WebsocketService(), []);
@@ -13,12 +16,27 @@ export const useCreateparty = () => {
   };
 
   const onCreateParty = async () => {
+    const nickname = nicknameInput.current?.value as string;
     const room = await socketService.createRoom({
-      nickname: nicknameInput.current?.value as string,
+      nickname,
       color,
     });
 
+    useUserStore.setState((state) => ({
+      ...state,
+      nickname,
+      color,
+    }));
+
+    useRoomStore.setState((state) => ({
+      ...state,
+      ...room,
+    }));
     router.push(`/party/${room.id}`);
+  };
+
+  const setColor = (color: Color) => {
+    useUserStore.setState((state) => ({ ...state, color }));
   };
 
   return {
