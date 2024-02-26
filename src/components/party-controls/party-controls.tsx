@@ -6,12 +6,7 @@ import removeIcon from "../../../public/remove.svg";
 import copyIcon from "../../../public/copy.svg";
 import { usePartyConstrols } from "./party-controls.state";
 import "./party-controls.styles.css";
-
-interface User {
-  id: string;
-  name: string;
-  color?: Color;
-}
+import { UserState } from "@/zustand/user.store";
 
 interface PartyControlsProps {
   /**
@@ -44,7 +39,7 @@ interface PartyControlsProps {
   /**
    * User's array object
    */
-  users: User[];
+  users: UserState[];
 
   /**
    * Additional classes
@@ -66,6 +61,7 @@ export const PartyControls = ({
     isStreaming,
     onChangeStreaming,
   });
+
   return (
     <div
       className={`flexflex-column  bg-midnight-black min-w-[274px] party-controls ${className}`}
@@ -90,7 +86,7 @@ export const PartyControls = ({
               className="flex w-full align-items-center justify-between"
               key={user.id}
             >
-              <User name={user.name} color={user.color} />
+              <User name={user.nickname} color={user.color} />
               <button onClick={() => onRemoveUser("user-id")}>
                 <Image src={removeIcon} alt="Remove" width={15} />
               </button>

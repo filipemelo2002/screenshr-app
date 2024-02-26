@@ -1,7 +1,7 @@
 import { Color } from "@/components/user/user";
 import { create } from "zustand";
 
-interface UserState {
+export interface UserState {
   nickname: string;
   id: string;
   color: Color;

@@ -10,7 +10,7 @@ interface PartyProps {
   };
 }
 export default function Party({ params }: PartyProps) {
-  const { navigateBack, isStreaming, nickname, color } = useParty();
+  const { navigateBack, isStreaming, nickname, color, users } = useParty();
 
   return (
     <div className="flex flex-col min-h-screen min-w-screen bg-black px-4 relative">
@@ -28,7 +28,7 @@ export default function Party({ params }: PartyProps) {
         onRemoveUser={() => {}}
         color={color}
         partyCode={params.partyId}
-        users={[]}
+        users={users}
         isStreaming={isStreaming}
         className="absolute bottom-0 left-0"
       />

@@ -31,6 +31,7 @@ export const useCreateparty = () => {
     useRoomStore.setState((state) => ({
       ...state,
       ...room,
+      users: [],
     }));
     router.push(`/party/${room.id}`);
   };
