@@ -10,7 +10,7 @@ export default function JoinParty() {
     navigateBack,
     color,
     setColor,
-    partyCodeInputRefs,
+    partyCodeInputRef,
     nicknameInput,
     onJoinParty,
   } = useJoinParty();
@@ -19,55 +19,8 @@ export default function JoinParty() {
     <Layout navigateBack={navigateBack}>
       <form className="mt-[41px]">
         <div className="flex flex-col">
-          <label className="font-bold font-sans text-sm text-steel-gray mb-3">
-            Party code
-          </label>
-          <div className="flex gap-4 max-w-[300px] text-center font-bold">
-            <Input
-              ref={(ref) => {
-                if (ref) {
-                  partyCodeInputRefs.current?.push(ref);
-                }
-              }}
-              className="text-2xl text-center uppercase"
-              maxLength={1}
-            />
-            <Input
-              ref={(ref) => {
-                if (ref) {
-                  partyCodeInputRefs.current?.push(ref);
-                }
-              }}
-              className="text-2xl text-center uppercase"
-              maxLength={1}
-            />
-            <Input
-              ref={(ref) => {
-                if (ref) {
-                  partyCodeInputRefs.current?.push(ref);
-                }
-              }}
-              className="text-2xl text-center uppercase"
-              maxLength={1}
-            />
-            <Input
-              ref={(ref) => {
-                if (ref) {
-                  partyCodeInputRefs.current?.push(ref);
-                }
-              }}
-              className="text-2xl text-center uppercase"
-              maxLength={1}
-            />
-            <Input
-              ref={(ref) => {
-                if (ref) {
-                  partyCodeInputRefs.current?.push(ref);
-                }
-              }}
-              className="text-2xl text-center uppercase"
-              maxLength={1}
-            />
+          <div className="max-w-[300px] font-bold">
+            <Input label="Party Code" ref={partyCodeInputRef} />
           </div>
           <div className="mt-4">
             <Input label="Nickname" ref={nicknameInput} />
