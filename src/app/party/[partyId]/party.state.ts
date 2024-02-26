@@ -1,9 +1,10 @@
+import { useUserStore } from "@/zustand/user.store";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 export const useParty = () => {
   const router = useRouter();
-  const [isStreaming, setIsStreaming] = useState(true);
+
+  const { nickname, color, id, isStreaming } = useUserStore();
 
   const navigateBack = () => {
     router.push("/");
@@ -12,5 +13,8 @@ export const useParty = () => {
   return {
     navigateBack,
     isStreaming,
+    nickname,
+    color,
+    id,
   };
 };
