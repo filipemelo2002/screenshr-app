@@ -9,30 +9,35 @@ const websocket: Socket<ServerToClient, ClientToServer> = io(
 );
 
 export class WebsocketService {
-  async createRoom({ nickname, color }: CreateRoomRequest): Promise<Room> {
-    const response = await fetch("http://localhost:3000/rooms", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+  async createRoom(
+    { nickname, color }: CreateRoomRequest,
+    cb: (val: CreateRoomResponse) => void,
+  ) {
+    websocket.emit(
+      "room/create",
+      {
+        color,
+        nickname,
       },
-      body: JSON.stringify({ nickname, color, owner: websocket.id }),
-    });
-
-    const data = await response.json();
-
-    return {
-      id: data.room.id,
-      owner: data.room.owner,
-      users: data.room.users,
-    };
+      cb,
+    );
   }
 
-  async joinRoom({ nickname, color, roomId }: JoinRoomRequest) {
-    websocket.emit("room/join", {
-      nickname,
-      color,
-      roomId,
-    });
+  async joinRoom(
+    { nickname, color, roomId }: JoinRoomRequest,
+    cb: (val: JoinRoomResponse) => void,
+  ) {
+    websocket.emit(
+      "room/join",
+      {
+        nickname,
+        color,
+        roomId,
+      },
+      (data) => {
+        cb(data);
+      },
+    );
   }
 
   onUpdateUsers(cb: (val?: any) => void) {
@@ -40,6 +45,10 @@ export class WebsocketService {
       const users = event.users.filter((user) => user.id !== websocket.id);
       cb(users);
     });
+  }
+
+  getId() {
+    return websocket.id;
   }
 }
 
@@ -54,10 +63,20 @@ interface CreateRoomRequest {
   color: string;
 }
 
+interface CreateRoomResponse {
+  user: UserState;
+  room: Room;
+}
+
 interface JoinRoomRequest {
   nickname: string;
   color: string;
   roomId: string;
+}
+
+interface JoinRoomResponse {
+  users: UserState[];
+  room: Room;
 }
 
 export const WEBSOCKET_EVENTS = {
@@ -71,6 +90,12 @@ interface ServerToClient {
 }
 
 interface ClientToServer {
-  "room/create": (arg: CreateRoomRequest) => void;
-  "room/join": (arg: JoinRoomRequest) => void;
+  "room/create": (
+    arg: CreateRoomRequest,
+    callback: (data: CreateRoomResponse) => void,
+  ) => void;
+  "room/join": (
+    arg: JoinRoomRequest,
+    callback: (data: JoinRoomResponse) => void,
+  ) => void;
 }

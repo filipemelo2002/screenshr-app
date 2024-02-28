@@ -17,23 +17,28 @@ export const useCreateparty = () => {
 
   const onCreateParty = async () => {
     const nickname = nicknameInput.current?.value as string;
-    const room = await socketService.createRoom({
-      nickname,
-      color,
-    });
+    socketService.createRoom(
+      {
+        nickname,
+        color,
+      },
+      (response) => {
+        const { room } = response;
 
-    useUserStore.setState((state) => ({
-      ...state,
-      nickname,
-      color,
-    }));
+        useUserStore.setState((state) => ({
+          ...state,
+          nickname,
+          color,
+        }));
 
-    useRoomStore.setState((state) => ({
-      ...state,
-      ...room,
-      users: [],
-    }));
-    router.push(`/party/${room.id}`);
+        useRoomStore.setState((state) => ({
+          ...state,
+          ...room,
+          users: [],
+        }));
+        router.push(`/party/${room.id}`);
+      },
+    );
   };
 
   const setColor = (color: Color) => {

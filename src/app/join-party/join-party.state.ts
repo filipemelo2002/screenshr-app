@@ -1,5 +1,7 @@
 import { Color } from "@/components/user/user";
 import { WebsocketService } from "@/services/websocket.service";
+import { useRoomStore } from "@/zustand/room.store";
+import { useUserStore } from "@/zustand/user.store";
 import { useRouter } from "next/navigation";
 import { useMemo, useRef, useState } from "react";
 
@@ -37,12 +39,31 @@ export const useJoinParty = () => {
     }
     const nickname = nicknameInput.current?.value as string;
     const partyCode = partyCodeInputRef.current?.value as string;
+    const id = socketService.getId();
+    socketService.joinRoom(
+      {
+        nickname: nickname,
+        roomId: partyCode,
+        color,
+      },
+      (response) => {
+        const { users, room } = response;
+        useUserStore.setState((state) => ({
+          ...state,
+          nickname,
+          color,
+          id,
+        }));
 
-    socketService.joinRoom({
-      nickname: nickname,
-      roomId: partyCode,
-      color,
-    });
+        useRoomStore.setState((state) => ({
+          ...state,
+          id: room.id,
+          users: users.filter((user) => user.id !== id),
+          owner: room.owner,
+        }));
+        router.push(`/party/${room.id}`);
+      },
+    );
   };
 
   return {
