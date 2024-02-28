@@ -2,8 +2,8 @@ import { Color } from "@/components/user/user";
 import { WebsocketService } from "@/services/websocket.service";
 import { useRoomStore } from "@/zustand/room.store";
 import { useUserStore } from "@/zustand/user.store";
-import { useRouter } from "next/navigation";
-import { useMemo, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 export const useJoinParty = () => {
   const [color, setColor] = useState<Color>("bg-blue");
@@ -11,6 +11,8 @@ export const useJoinParty = () => {
   const router = useRouter();
   const nicknameInput = useRef<HTMLInputElement>(null);
   const socketService = useMemo(() => new WebsocketService(), []);
+  const searchParams = useSearchParams();
+  const roomIdFromSearchParams = searchParams.get("roomId");
 
   const navigateBack = () => {
     router.push("/");
@@ -65,6 +67,11 @@ export const useJoinParty = () => {
       },
     );
   };
+  useEffect(() => {
+    if (partyCodeInputRef.current && roomIdFromSearchParams) {
+      partyCodeInputRef.current.value = roomIdFromSearchParams;
+    }
+  }, [partyCodeInputRef, roomIdFromSearchParams]);
 
   return {
     navigateBack,
