@@ -23,21 +23,30 @@ export class WebsocketService {
     );
   }
 
-  async joinRoom(
-    { nickname, color, roomId }: JoinRoomRequest,
-    cb: (val: JoinRoomResponse) => void,
-  ) {
-    websocket.emit(
-      "room/join",
-      {
-        nickname,
-        color,
-        roomId,
+  async joinRoom({
+    nickname,
+    color,
+    roomId,
+  }: JoinRoomRequest): Promise<JoinRoomResponse> {
+    const response = await fetch("http://localhost:3000/rooms/join", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-      (data) => {
-        cb(data);
-      },
-    );
+      body: JSON.stringify({ nickname, color, id: websocket.id, roomId }),
+    });
+
+    const data = await response.json();
+
+    websocket.emit("room/join", {
+      roomId,
+    });
+
+    return {
+      user: data.user,
+      room: data.room,
+      users: data.users,
+    };
   }
 
   onUpdateUsers(cb: (val?: any) => void) {
@@ -77,6 +86,7 @@ interface JoinRoomRequest {
 interface JoinRoomResponse {
   users: UserState[];
   room: Room;
+  user: UserState;
 }
 
 export const WEBSOCKET_EVENTS = {
@@ -95,7 +105,7 @@ interface ClientToServer {
     callback: (data: CreateRoomResponse) => void,
   ) => void;
   "room/join": (
-    arg: JoinRoomRequest,
-    callback: (data: JoinRoomResponse) => void,
+    arg: { roomId: string },
+    callback?: (data: JoinRoomResponse) => void,
   ) => void;
 }

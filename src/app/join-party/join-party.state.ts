@@ -35,37 +35,33 @@ export const useJoinParty = () => {
 
     return true;
   };
-  const onJoinParty = () => {
+  const onJoinParty = async () => {
     if (!validateInputs()) {
       return;
     }
     const nickname = nicknameInput.current?.value as string;
     const partyCode = partyCodeInputRef.current?.value as string;
     const id = socketService.getId();
-    socketService.joinRoom(
-      {
-        nickname: nickname,
-        roomId: partyCode,
-        color,
-      },
-      (response) => {
-        const { users, room } = response;
-        useUserStore.setState((state) => ({
-          ...state,
-          nickname,
-          color,
-          id,
-        }));
+    const response = await socketService.joinRoom({
+      nickname: nickname,
+      roomId: partyCode,
+      color,
+    });
+    const { room, users } = response;
+    useUserStore.setState((state) => ({
+      ...state,
+      nickname,
+      color,
+      id,
+    }));
 
-        useRoomStore.setState((state) => ({
-          ...state,
-          id: room.id,
-          users: users.filter((user) => user.id !== id),
-          owner: room.owner,
-        }));
-        router.push(`/party/${room.id}`);
-      },
-    );
+    useRoomStore.setState((state) => ({
+      ...state,
+      id: room.id,
+      users: users.filter((user) => user.id !== id),
+      owner: room.owner,
+    }));
+    router.push(`/party/${room.id}`);
   };
   useEffect(() => {
     if (partyCodeInputRef.current && roomIdFromSearchParams) {
