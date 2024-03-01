@@ -1,21 +1,45 @@
+import { WebRTC } from "@/services/webrtc.service";
 import { WebsocketService } from "@/services/websocket.service";
 import { useRoomStore } from "@/zustand/room.store";
 import { useUserStore } from "@/zustand/user.store";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 
+const webrtcService = new WebRTC();
+const socketService = new WebsocketService();
 export const useParty = () => {
   const router = useRouter();
 
   const { nickname, color, id, isStreaming } = useUserStore();
   const { id: roomId, users } = useRoomStore();
   const { partyId } = useParams<{ partyId: string }>();
-
-  const socketService = useRef(new WebsocketService()).current;
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const navigateBack = () => {
     router.push("/");
   };
+
+  const toggleStream = useCallback(async (value: boolean) => {
+    if (!videoRef.current) {
+      alert("Could not find local video element");
+      return;
+    }
+
+    if (!value && videoRef.current) {
+      videoRef.current.srcObject = null;
+      useUserStore.setState((state) => ({ ...state, isStreaming: value }));
+      return;
+    }
+
+    try {
+      const mediaStream = await webrtcService.getMediaStream();
+      videoRef.current.srcObject = mediaStream;
+      videoRef.current.play();
+      useUserStore.setState((state) => ({ ...state, isStreaming: true }));
+    } catch (exception) {
+      useUserStore.setState((state) => ({ ...state, isStreaming: false }));
+    }
+  }, []);
 
   useLayoutEffect(() => {
     if (!nickname || !roomId) {
@@ -30,7 +54,7 @@ export const useParty = () => {
         users,
       }));
     });
-  }, [socketService]);
+  }, []);
 
   return {
     navigateBack,
@@ -39,5 +63,7 @@ export const useParty = () => {
     color,
     id,
     users,
+    videoRef,
+    toggleStream,
   };
 };

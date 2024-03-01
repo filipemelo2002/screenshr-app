@@ -10,21 +10,29 @@ interface PartyProps {
   };
 }
 export default function Party({ params }: PartyProps) {
-  const { navigateBack, isStreaming, nickname, color, users } = useParty();
+  const {
+    navigateBack,
+    isStreaming,
+    nickname,
+    color,
+    users,
+    videoRef,
+    toggleStream,
+  } = useParty();
 
   return (
     <div className="flex flex-col min-h-screen min-w-screen bg-black px-4 relative">
       <Navbar onClick={navigateBack} label="Exit" />
       <div className="flex relative h-[calc(100vh-56px)] max-h-screen max-w-screen">
         <video
-          src="https://www.w3schools.com/tags/movie.mp4"
           className="video-local h-full m-auto"
           muted={isStreaming}
+          ref={videoRef}
         ></video>
       </div>
       <PartyControls
         name={nickname}
-        onChangeStreaming={() => {}}
+        onChangeStreaming={toggleStream}
         onRemoveUser={() => {}}
         color={color}
         partyCode={params.partyId}
