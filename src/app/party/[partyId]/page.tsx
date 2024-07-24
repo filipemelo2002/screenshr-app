@@ -21,7 +21,7 @@ export default function Party({ params }: PartyProps) {
   } = useParty();
 
   return (
-    <div className="flex flex-col min-h-screen min-w-screen bg-black px-4 relative">
+    <div className="flex flex-col min-h-screen min-w-screen bg-black relative">
       <Navbar onClick={navigateBack} label="Exit" />
       <div className="flex relative h-[calc(100vh-56px)] max-h-screen max-w-screen">
         <video
