@@ -1,7 +1,7 @@
 import { WebRTC } from "@/services/webrtc.service";
 import { WebsocketService } from "@/services/websocket.service";
 import { useRoomStore } from "@/zustand/room.store";
-import { useUserStore } from "@/zustand/user.store";
+import { UserState, useUserStore } from "@/zustand/user.store";
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 
@@ -41,6 +41,18 @@ export const useParty = () => {
     }
   }, []);
 
+  function handleOnUpdateUsers({
+    users,
+    newUserId,
+  }: {
+    users: UserState[];
+    newUserId: string;
+  }) {
+    useRoomStore.setState((state) => ({
+      ...state,
+      users,
+    }));
+  }
   useLayoutEffect(() => {
     if (!nickname || !roomId) {
       router.push(`/join-party?roomId=${partyId}`);
@@ -48,12 +60,7 @@ export const useParty = () => {
   }, [nickname, roomId, router, partyId]);
 
   useEffect(() => {
-    socketService.onUpdateUsers((users) => {
-      useRoomStore.setState((state) => ({
-        ...state,
-        users,
-      }));
-    });
+    socketService.onUpdateUsers(handleOnUpdateUsers);
   }, []);
 
   return {

@@ -52,7 +52,7 @@ export class WebsocketService {
   onUpdateUsers(cb: (val?: any) => void) {
     websocket.on("room/update-users", (event) => {
       const users = event.users.filter((user) => user.id !== websocket.id);
-      cb(users);
+      cb({ users, newUserId: event.newUserId });
     });
   }
 
@@ -96,7 +96,10 @@ export const WEBSOCKET_EVENTS = {
 };
 
 interface ServerToClient {
-  "room/update-users": (args: { users: UserState[] }) => void;
+  "room/update-users": (args: {
+    users: UserState[];
+    newUserId: string;
+  }) => void;
 }
 
 interface ClientToServer {
