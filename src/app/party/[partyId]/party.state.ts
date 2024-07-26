@@ -32,7 +32,13 @@ export const useParty = () => {
     }
 
     try {
-      const mediaStream = await webrtcService.getMediaStream();
+      const mediaStream = await webrtcService.getMediaStream(() => {
+        useUserStore.setState((state) => ({ ...state, isStreaming: false }));
+        if (videoRef.current) {
+          videoRef.current.pause();
+          videoRef.current.srcObject = null;
+        }
+      });
       videoRef.current.srcObject = mediaStream;
       videoRef.current.play();
       useUserStore.setState((state) => ({ ...state, isStreaming: true }));

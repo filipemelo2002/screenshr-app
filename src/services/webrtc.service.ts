@@ -2,6 +2,8 @@ type CallBack = (stream: MediaStream) => void;
 
 type ICECallBack = (candidate: RTCIceCandidate) => void;
 
+type OnStreamEndCallback = (steam?: MediaStreamTrack, ev?: Event) => any;
+
 export class WebRTC {
   private peerConnection: RTCPeerConnection;
   mediaStream: MediaStream | null = null;
@@ -13,13 +15,16 @@ export class WebRTC {
     this.peerConnection = new RTCPeerConnection(configuration);
   }
 
-  async getMediaStream() {
+  async getMediaStream(cb: OnStreamEndCallback) {
     const mediaStream = await navigator.mediaDevices.getDisplayMedia({
       video: true,
     });
     this.mediaStream = mediaStream;
     mediaStream.getTracks().forEach((track) => {
       this.peerConnection.addTrack(track, mediaStream);
+      track.onended = function (this: MediaStreamTrack, e: Event) {
+        cb(this, e);
+      };
     });
     return mediaStream;
   }
