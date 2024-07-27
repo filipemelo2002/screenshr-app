@@ -11,7 +11,7 @@ export const useParty = () => {
   const router = useRouter();
 
   const { nickname, color, id, isStreaming } = useUserStore();
-  const { id: roomId, users } = useRoomStore();
+  const { id: roomId, users, owner } = useRoomStore();
   const { partyId } = useParams<{ partyId: string }>();
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -47,7 +47,7 @@ export const useParty = () => {
     }
   }, []);
 
-  function handleOnUpdateUsers({
+  async function handleOnUpdateUsers({
     users,
     newUserId,
   }: {
@@ -58,7 +58,30 @@ export const useParty = () => {
       ...state,
       users,
     }));
+
+    if (newUserId && owner === id) {
+      const offer = await webrtcService.makeOffer(newUserId);
+      socketService.sendOffer(newUserId, offer);
+    }
   }
+
+  async function handleOnReceiveOffer(
+    id: string,
+    offer: RTCSessionDescriptionInit,
+  ) {
+    await webrtcService.setRemoteOffer(id, offer);
+    const answer = await webrtcService.makeAnswer(id);
+    await webrtcService.setLocalOffer(id, answer);
+    socketService.sendAnswer(id, answer);
+  }
+
+  async function handleOnReceiveAnswer(
+    id: string,
+    answer: RTCSessionDescriptionInit,
+  ) {
+    await webrtcService.setRemoteOffer(id, answer);
+  }
+
   useLayoutEffect(() => {
     if (!nickname || !roomId) {
       router.push(`/join-party?roomId=${partyId}`);
@@ -67,6 +90,8 @@ export const useParty = () => {
 
   useEffect(() => {
     socketService.onUpdateUsers(handleOnUpdateUsers);
+    socketService.onReceiveOffer(handleOnReceiveOffer);
+    socketService.onReceiveAnswer(handleOnReceiveAnswer);
   }, []);
 
   return {

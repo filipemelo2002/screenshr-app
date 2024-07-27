@@ -59,6 +59,34 @@ export class WebsocketService {
   getId() {
     return websocket.id;
   }
+
+  sendOffer(to: string, offer: RTCSessionDescriptionInit) {
+    websocket.emit("offer/send", {
+      to,
+      offer,
+    });
+  }
+
+  onReceiveOffer(cb: (id: string, offer: RTCSessionDescriptionInit) => void) {
+    websocket.on("offer/receive", (event) => {
+      const { id, offer } = event;
+      cb(id, offer);
+    });
+  }
+
+  sendAnswer(to: string, answer: RTCSessionDescriptionInit) {
+    websocket.emit("answer/send", {
+      to,
+      answer,
+    });
+  }
+
+  onReceiveAnswer(cb: (id: string, answer: RTCSessionDescriptionInit) => void) {
+    websocket.on("answer/receive", (event) => {
+      const { id, answer } = event;
+      cb(id, answer);
+    });
+  }
 }
 
 export interface Room {
@@ -100,6 +128,14 @@ interface ServerToClient {
     users: UserState[];
     newUserId: string;
   }) => void;
+  "offer/receive": (args: {
+    id: string;
+    offer: RTCSessionDescriptionInit;
+  }) => void;
+  "answer/receive": (args: {
+    id: string;
+    answer: RTCSessionDescriptionInit;
+  }) => void;
 }
 
 interface ClientToServer {
@@ -111,4 +147,9 @@ interface ClientToServer {
     arg: { roomId: string },
     callback?: (data: JoinRoomResponse) => void,
   ) => void;
+  "offer/send": (arg: { to: string; offer: RTCSessionDescriptionInit }) => void;
+  "answer/send": (arg: {
+    to: string;
+    answer: RTCSessionDescriptionInit;
+  }) => void;
 }

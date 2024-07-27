@@ -48,19 +48,19 @@ export class WebRTC {
     let peerConnection = this.peerConnection.get(id);
 
     if (!peerConnection) {
-      peerConnection = new RTCPeerConnection(this.configuration);
+      throw new Error("Peer connection for given id " + id + " was not found.");
     }
-    this.peerConnection.set(id, peerConnection);
 
     const answer = await peerConnection.createAnswer();
     return answer;
   }
 
   async setRemoteOffer(id: string, offer: RTCSessionDescriptionInit) {
-    const peerConnection = this.peerConnection.get(id);
+    let peerConnection = this.peerConnection.get(id);
 
     if (!peerConnection) {
-      throw new Error("Peer connection for given id " + id + " was not found.");
+      peerConnection = new RTCPeerConnection(this.configuration);
+      this.peerConnection.set(id, peerConnection);
     }
 
     await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
