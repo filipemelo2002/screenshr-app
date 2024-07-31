@@ -61,7 +61,7 @@ export const useParty = () => {
 
     if (newUserId && owner === id) {
       const offer = await webrtcService.makeOffer(newUserId);
-      socketService.sendOffer(newUserId, offer);
+      socketService.sendOffer(roomId, newUserId, offer);
     }
   }
 
@@ -72,7 +72,7 @@ export const useParty = () => {
     await webrtcService.setRemoteOffer(id, offer);
     const answer = await webrtcService.makeAnswer(id);
     await webrtcService.setLocalOffer(id, answer);
-    socketService.sendAnswer(id, answer);
+    socketService.sendAnswer(roomId, id, answer);
   }
 
   async function handleOnReceiveAnswer(
@@ -88,7 +88,7 @@ export const useParty = () => {
     }
   }, [nickname, roomId, router, partyId]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     socketService.onUpdateUsers(handleOnUpdateUsers);
     socketService.onReceiveOffer(handleOnReceiveOffer);
     socketService.onReceiveAnswer(handleOnReceiveAnswer);

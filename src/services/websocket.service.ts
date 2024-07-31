@@ -60,10 +60,11 @@ export class WebsocketService {
     return websocket.id;
   }
 
-  sendOffer(to: string, offer: RTCSessionDescriptionInit) {
+  sendOffer(roomId: string, to: string, offer: RTCSessionDescriptionInit) {
     websocket.emit("offer/send", {
       to,
       offer,
+      roomId,
     });
   }
 
@@ -74,10 +75,11 @@ export class WebsocketService {
     });
   }
 
-  sendAnswer(to: string, answer: RTCSessionDescriptionInit) {
+  sendAnswer(roomId: string, to: string, answer: RTCSessionDescriptionInit) {
     websocket.emit("answer/send", {
       to,
       answer,
+      roomId,
     });
   }
 
@@ -147,9 +149,14 @@ interface ClientToServer {
     arg: { roomId: string },
     callback?: (data: JoinRoomResponse) => void,
   ) => void;
-  "offer/send": (arg: { to: string; offer: RTCSessionDescriptionInit }) => void;
+  "offer/send": (arg: {
+    to: string;
+    offer: RTCSessionDescriptionInit;
+    roomId: string;
+  }) => void;
   "answer/send": (arg: {
     to: string;
     answer: RTCSessionDescriptionInit;
+    roomId: string;
   }) => void;
 }

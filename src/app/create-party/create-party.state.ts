@@ -29,6 +29,7 @@ export const useCreateparty = () => {
           ...state,
           nickname,
           color,
+          id: socketService.getId(),
         }));
 
         useRoomStore.setState((state) => ({
