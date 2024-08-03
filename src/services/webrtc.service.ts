@@ -1,6 +1,6 @@
 type CallBack = (stream: MediaStream) => void;
 
-type ICECallBack = (candidate: RTCIceCandidate) => void;
+type ICECallBack = (id: string, candidate: RTCIceCandidate) => void;
 
 type OnStreamEndCallback = (steam?: MediaStreamTrack, ev?: Event) => any;
 
@@ -85,7 +85,7 @@ export class WebRTC {
 
     peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
       if (event.candidate) {
-        cb(event.candidate);
+        cb(id, event.candidate);
       }
     };
   }

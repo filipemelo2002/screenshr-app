@@ -10,7 +10,7 @@ const socketService = new WebsocketService();
 export const useParty = () => {
   const router = useRouter();
 
-  const { nickname, color, id, isStreaming } = useUserStore();
+  const { nickname, color, id: userId, isStreaming } = useUserStore();
   const { id: roomId, users, owner } = useRoomStore();
   const { partyId } = useParams<{ partyId: string }>();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -59,9 +59,13 @@ export const useParty = () => {
       users,
     }));
 
-    if (newUserId && owner === id) {
+    if (newUserId && owner === userId) {
       const offer = await webrtcService.makeOffer(newUserId);
+      await webrtcService.setLocalOffer(newUserId, offer);
       socketService.sendOffer(roomId, newUserId, offer);
+      webrtcService.onICECandidateChange(newUserId, (id, candidate) => {
+        socketService.sendIceCandidate(roomId, id, candidate);
+      });
     }
   }
 
@@ -73,6 +77,15 @@ export const useParty = () => {
     const answer = await webrtcService.makeAnswer(id);
     await webrtcService.setLocalOffer(id, answer);
     socketService.sendAnswer(roomId, id, answer);
+    webrtcService.onICECandidateChange(id, (_, candidate) => {
+      socketService.sendIceCandidate(roomId, id, candidate);
+    });
+    webrtcService.onStream(id, (mediaStream) => {
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+        videoRef.current.play();
+      }
+    });
   }
 
   async function handleOnReceiveAnswer(
@@ -82,6 +95,12 @@ export const useParty = () => {
     await webrtcService.setRemoteOffer(id, answer);
   }
 
+  async function handleOnReceiveIceCandidate(
+    id: string,
+    candidate: RTCIceCandidate,
+  ) {
+    await webrtcService.setICECandidate(id, candidate);
+  }
   useLayoutEffect(() => {
     if (!nickname || !roomId) {
       router.push(`/join-party?roomId=${partyId}`);
@@ -92,6 +111,11 @@ export const useParty = () => {
     socketService.onUpdateUsers(handleOnUpdateUsers);
     socketService.onReceiveOffer(handleOnReceiveOffer);
     socketService.onReceiveAnswer(handleOnReceiveAnswer);
+    socketService.onReceiveIceCandidate(handleOnReceiveIceCandidate);
+
+    return () => {
+      socketService.unsubscribe();
+    };
   }, []);
 
   return {
@@ -99,7 +123,7 @@ export const useParty = () => {
     isStreaming,
     nickname,
     color,
-    id,
+    id: userId,
     users,
     videoRef,
     toggleStream,

@@ -89,6 +89,25 @@ export class WebsocketService {
       cb(id, answer);
     });
   }
+
+  sendIceCandidate(roomId: string, to: string, candidate: RTCIceCandidate) {
+    websocket.emit("candidate/send", {
+      to,
+      roomId,
+      candidate,
+    });
+  }
+
+  onReceiveIceCandidate(cb: (id: string, candidate: RTCIceCandidate) => void) {
+    websocket.on("candidate/receive", (event) => {
+      const { candidate, id } = event;
+      cb(id, candidate);
+    });
+  }
+
+  unsubscribe() {
+    websocket.removeAllListeners();
+  }
 }
 
 export interface Room {
@@ -138,7 +157,12 @@ interface ServerToClient {
     id: string;
     answer: RTCSessionDescriptionInit;
   }) => void;
+  "candidate/receive": (args: {
+    id: string;
+    candidate: RTCIceCandidate;
+  }) => void;
 }
+type ServerEvents = keyof ServerToClient;
 
 interface ClientToServer {
   "room/create": (
@@ -157,6 +181,11 @@ interface ClientToServer {
   "answer/send": (arg: {
     to: string;
     answer: RTCSessionDescriptionInit;
+    roomId: string;
+  }) => void;
+  "candidate/send": (args: {
+    candidate: RTCIceCandidate;
+    to: string;
     roomId: string;
   }) => void;
 }
