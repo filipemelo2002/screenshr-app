@@ -5,110 +5,116 @@ type ICECallBack = (id: string, candidate: RTCIceCandidate) => void;
 type OnStreamEndCallback = (steam?: MediaStreamTrack, ev?: Event) => any;
 
 export class WebRTC {
-  private peerConnection: Map<string, RTCPeerConnection>;
-  mediaStream: MediaStream | null = null;
-
+  // private peerConnection: RTCPeerConnection;
+  // mediaStream: MediaStream | null = null;
+  // private observable = new Observable<MediaStream>();
   private configuration: RTCConfiguration = {
     iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
   };
 
   constructor() {
-    this.peerConnection = new Map<string, RTCPeerConnection>();
+    // this.peerConnection = new RTCPeerConnection(this.configuration);
   }
 
-  async getMediaStream(cb: OnStreamEndCallback) {
+  createConnection() {
+    return new RTCPeerConnection(this.configuration);
+  }
+
+  async getMediaStream() {
     const mediaStream = await navigator.mediaDevices.getDisplayMedia({
       video: true,
     });
-    this.mediaStream = mediaStream;
-    mediaStream.getTracks().forEach((track) => {
-      this.peerConnection.forEach((peerConnection) => {
-        peerConnection.addTrack(track, mediaStream);
-      });
-      track.onended = function (this: MediaStreamTrack, e: Event) {
-        cb(this, e);
-      };
-    });
+    // this.mediaStream = mediaStream;
+    // this.observable.notify(mediaStream);
     return mediaStream;
   }
 
-  async makeOffer(id: string) {
-    let peerConnection = this.peerConnection.get(id);
+  // onChangeMediaStream(cb: CallBack) {
+  //   this.observable.subscribe(cb);
+  // }
 
-    if (!peerConnection) {
-      peerConnection = new RTCPeerConnection(this.configuration);
+  sendStream(peerConnection: RTCPeerConnection, media?: MediaStream | null) {
+    // if (!this.peerConnection) {
+    //   throw new Error("Peer connection was not found.");
+    // }
+    // const media = this.mediaStream;
+    if (media) {
+      media.getTracks().forEach((track) => {
+        peerConnection.addTrack(track, media);
+      });
     }
-    this.peerConnection.set(id, peerConnection);
+  }
 
+  // sendStreamToAll(mediaStream: MediaStream) {
+  //   mediaStream.getTracks().forEach((track) => {
+  //     this.peerConnection.addTrack(track, mediaStream);
+  //   });
+  // }
+
+  async makeOffer(peerConnection: RTCPeerConnection) {
     const offer = await peerConnection.createOffer();
     return offer;
   }
 
-  async makeAnswer(id: string) {
-    let peerConnection = this.peerConnection.get(id);
-
-    if (!peerConnection) {
-      throw new Error("Peer connection for given id " + id + " was not found.");
-    }
-
+  async makeAnswer(peerConnection: RTCPeerConnection) {
     const answer = await peerConnection.createAnswer();
     return answer;
   }
 
-  async setRemoteOffer(id: string, offer: RTCSessionDescriptionInit) {
-    let peerConnection = this.peerConnection.get(id);
-
-    if (!peerConnection) {
-      peerConnection = new RTCPeerConnection(this.configuration);
-      this.peerConnection.set(id, peerConnection);
-    }
-
+  async setRemoteOffer(
+    peerConnection: RTCPeerConnection,
+    offer: RTCSessionDescriptionInit,
+  ) {
     await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
   }
 
-  async setLocalOffer(id: string, offer: RTCSessionDescriptionInit) {
-    const peerConnection = this.peerConnection.get(id);
-
-    if (!peerConnection) {
-      throw new Error("Peer connection for given id " + id + " was not found.");
-    }
-
+  async setLocalOffer(
+    peerConnection: RTCPeerConnection,
+    offer: RTCSessionDescriptionInit,
+  ) {
     await peerConnection.setLocalDescription(offer);
   }
 
-  onICECandidateChange(id: string, cb: ICECallBack) {
-    const peerConnection = this.peerConnection.get(id);
-
-    if (!peerConnection) {
-      throw new Error("Peer connection for given id " + id + " was not found.");
-    }
-
+  onICECandidateChange(peerConnection: RTCPeerConnection, cb: ICECallBack) {
     peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
       if (event.candidate) {
-        cb(id, event.candidate);
+        cb("ddfd", event.candidate);
       }
     };
   }
 
-  async setICECandidate(id: string, candidate: RTCIceCandidate) {
-    const peerConnection = this.peerConnection.get(id);
-
-    if (!peerConnection) {
-      throw new Error("Peer connection for given id " + id + " was not found.");
-    }
-
-    peerConnection.addIceCandidate(candidate);
+  async setICECandidate(
+    peerConnection: RTCPeerConnection,
+    candidate: RTCIceCandidate,
+  ) {
+    await peerConnection.addIceCandidate(candidate);
   }
 
-  onStream(id: string, cb: CallBack) {
-    const peerConnection = this.peerConnection.get(id);
-
-    if (!peerConnection) {
-      throw new Error("Peer connection for given id " + id + " was not found.");
-    }
-
+  onStream(peerConnection: RTCPeerConnection, cb: CallBack) {
     peerConnection.ontrack = function ({ streams: [stream] }) {
       cb(stream);
     };
   }
 }
+
+// class Observable<T> {
+//   private observers: Function[];
+
+//   constructor() {
+//     this.observers = [];
+//   }
+
+//   subscribe(cb: Function) {
+//     this.observers.push(cb);
+//   }
+//   unsubscribe(cb: Function) {
+//     this.observers = this.observers.filter((aux) => aux !== cb);
+//   }
+//   cleanup() {
+//     this.observers = [];
+//   }
+
+//   notify(data: T) {
+//     this.observers.forEach((subscriber) => subscriber(data));
+//   }
+// }

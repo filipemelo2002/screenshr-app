@@ -3,11 +3,23 @@ import { WebsocketService } from "@/services/websocket.service";
 import { useRoomStore } from "@/zustand/room.store";
 import { UserState, useUserStore } from "@/zustand/user.store";
 import { useParams, useRouter } from "next/navigation";
-import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
-const webrtcService = new WebRTC();
-const socketService = new WebsocketService();
 export const useParty = () => {
+  const [peerConnection, setPeerConnection] =
+    useState<RTCPeerConnection | null>(null);
+  const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
+
+  const webrtcService = useMemo(() => new WebRTC(), []);
+  const socketService = useMemo(() => new WebsocketService(), []);
+
   const router = useRouter();
 
   const { nickname, color, id: userId, isStreaming } = useUserStore();
@@ -32,14 +44,9 @@ export const useParty = () => {
     }
 
     try {
-      const mediaStream = await webrtcService.getMediaStream(() => {
-        useUserStore.setState((state) => ({ ...state, isStreaming: false }));
-        if (videoRef.current) {
-          videoRef.current.pause();
-          videoRef.current.srcObject = null;
-        }
-      });
-      videoRef.current.srcObject = mediaStream;
+      const newMediaStream = await webrtcService.getMediaStream();
+      videoRef.current.srcObject = newMediaStream;
+      setMediaStream(newMediaStream);
       videoRef.current.play();
       useUserStore.setState((state) => ({ ...state, isStreaming: true }));
     } catch (exception) {
@@ -60,12 +67,18 @@ export const useParty = () => {
     }));
 
     if (newUserId && owner === userId) {
-      const offer = await webrtcService.makeOffer(newUserId);
-      await webrtcService.setLocalOffer(newUserId, offer);
-      socketService.sendOffer(roomId, newUserId, offer);
-      webrtcService.onICECandidateChange(newUserId, (id, candidate) => {
-        socketService.sendIceCandidate(roomId, id, candidate);
+      const newPeerConnection = webrtcService.createConnection();
+      webrtcService.sendStream(newPeerConnection, mediaStream);
+      const offer = await webrtcService.makeOffer(newPeerConnection);
+      await webrtcService.setLocalOffer(newPeerConnection, offer);
+      webrtcService.onICECandidateChange(newPeerConnection, (id, candidate) => {
+        socketService.sendIceCandidate(roomId, newUserId, candidate);
       });
+      socketService.onReceiveIceCandidate(async (id, candidate) => {
+        await webrtcService.setICECandidate(newPeerConnection, candidate);
+      });
+      socketService.sendOffer(roomId, newUserId, offer);
+      setPeerConnection(newPeerConnection);
     }
   }
 
@@ -73,34 +86,50 @@ export const useParty = () => {
     id: string,
     offer: RTCSessionDescriptionInit,
   ) {
-    await webrtcService.setRemoteOffer(id, offer);
-    const answer = await webrtcService.makeAnswer(id);
-    await webrtcService.setLocalOffer(id, answer);
-    socketService.sendAnswer(roomId, id, answer);
-    webrtcService.onICECandidateChange(id, (_, candidate) => {
+    const newPeerConnection = webrtcService.createConnection();
+    await webrtcService.setRemoteOffer(newPeerConnection, offer);
+    const answer = await webrtcService.makeAnswer(newPeerConnection);
+    await webrtcService.setLocalOffer(newPeerConnection, answer);
+    webrtcService.onICECandidateChange(newPeerConnection, (_, candidate) => {
       socketService.sendIceCandidate(roomId, id, candidate);
     });
-    webrtcService.onStream(id, (mediaStream) => {
+    socketService.onReceiveIceCandidate(async (id, candidate) => {
+      await webrtcService.setICECandidate(newPeerConnection, candidate);
+    });
+    socketService.sendAnswer(roomId, id, answer);
+    webrtcService.onStream(newPeerConnection, (stream) => {
       if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
+        videoRef.current.srcObject = stream;
         videoRef.current.play();
       }
     });
+    setPeerConnection(newPeerConnection);
   }
 
   async function handleOnReceiveAnswer(
     id: string,
     answer: RTCSessionDescriptionInit,
   ) {
-    await webrtcService.setRemoteOffer(id, answer);
+    if (!peerConnection) {
+      throw new Error(
+        "no peerconnection created so far at handleOnReceiveAnswer",
+      );
+    }
+    await webrtcService.setRemoteOffer(peerConnection, answer);
   }
 
-  async function handleOnReceiveIceCandidate(
-    id: string,
-    candidate: RTCIceCandidate,
-  ) {
-    await webrtcService.setICECandidate(id, candidate);
-  }
+  // async function handleOnChangeMediaStream(mediaStream: MediaStream) {
+  //   webrtcService.sendStreamToAll(mediaStream);
+  //   mediaStream.getTracks().forEach((track) => {
+  //     track.onended = () => {
+  //       useUserStore.setState((state) => ({ ...state, isStreaming: false }));
+  //       if (videoRef.current) {
+  //         videoRef.current.pause();
+  //         videoRef.current.srcObject = null;
+  //       }
+  //     };
+  //   });
+  // }
   useLayoutEffect(() => {
     if (!nickname || !roomId) {
       router.push(`/join-party?roomId=${partyId}`);
@@ -111,12 +140,12 @@ export const useParty = () => {
     socketService.onUpdateUsers(handleOnUpdateUsers);
     socketService.onReceiveOffer(handleOnReceiveOffer);
     socketService.onReceiveAnswer(handleOnReceiveAnswer);
-    socketService.onReceiveIceCandidate(handleOnReceiveIceCandidate);
-
+    // socketService.onReceiveIceCandidate(handleOnReceiveIceCandidate);
+    // webrtcService.onChangeMediaStream(handleOnChangeMediaStream);
     return () => {
       socketService.unsubscribe();
     };
-  }, []);
+  }, [peerConnection, mediaStream]);
 
   return {
     navigateBack,
